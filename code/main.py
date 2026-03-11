@@ -54,6 +54,7 @@ def bayes_trans(Xs, ys, iters=10000, fixed={}, plotprefix=None,
         'lambda_p': jnp.array(1.),
         'rho': jnp.array(0.5),
         'omega': jnp.ones(([P])),
+        'nu': jnp.ones(([P])), # auxiliary variable for omega when using inverse-beta prior
         'tau2': jnp.array(1.)
     }
     if docorr:

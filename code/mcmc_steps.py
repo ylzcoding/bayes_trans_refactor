@@ -18,9 +18,16 @@ def sample_omega(vw, z_samp, omega_prior):
         shape_g = 1.0
         rate_g = 0.5*(1/jnp.square(vw['lambda_t']) + jnp.square(z_samp)/vw['sigma2'])
         return 1.0 / np.random.gamma(shape_g, 1/rate_g)
+    elif omega_prior == 'ib':
+        # update auxiliary variable nu
+        rate_nu = 1.0 /vw['omega'] + 1.0 / jnp.square(vw['lambda_t'])
+        vw['nu'] = 1.0 / np.random.gamma(1.0, 1.0 / rate_nu)
+        rate_omega = 0.5 * jnp.square(z_samp) / vw['sigma2'] + 1.0 / vw['nu']
+        return 1.0 / np.random.gamma(1.0, 1.0 / rate_omega)
     return vw['omega']
 
 def sample_lambda_t(vw, omega_prior, P):
+
     """Update lambda_t"""
     A = 1.0 #  Cauchy scale.
     if omega_prior == 'exp':
@@ -32,6 +39,12 @@ def sample_lambda_t(vw, omega_prior, P):
         phi_samp = np.square(vw['lambda_t'])
         a_samp = 1/np.random.gamma(1., 1/(A+1/phi_samp))
         g_rate = 1/a_samp + 0.5*jnp.sum(1/vw['omega'])
+        phi_samp = 1/np.random.gamma((P+1)/2, 1/g_rate)
+        return jnp.sqrt(phi_samp)
+    elif omega_prior == 'ib':
+        phi_samp = jnp.square(vw['lambda_t'])
+        a_samp = 1/np.random.gamma(1., 1/(A+1/phi_samp))
+        g_rate = 1.0 / a_samp + jnp.sum(1.0 / vw['nu'])
         phi_samp = 1/np.random.gamma((P+1)/2, 1/g_rate)
         return jnp.sqrt(phi_samp)
     return vw['lambda_t']
