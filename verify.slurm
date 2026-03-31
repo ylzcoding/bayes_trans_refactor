@@ -14,15 +14,15 @@ module load R/4.2.1-foss-2022a
 module load conda/latest
 module load cuda/12.6
 module load cudnn/8.9.7.29-12-cuda12.6
-# PYTHONPATH=""
+PYTHONPATH=""
 source ~/.bashrc
-export PYTHONPATH=""
-export PYTHONNOUSERSITE=1
+
 #conda activate trans3
-conda activate bayes_trans_temp
+#conda activate bayes_trans_temp
+conda activate bayes_trans_priors
+
 
 echo "Hello from $(hostname)"
-cd ../code
 
 #module load cuda/12.4.1
 #module load cudnn/8.9.7.29-12-cuda12.6
@@ -35,6 +35,6 @@ cd ../code
 #corr_var=0.1
 #python python/verify_samplers.py $SLURM_ARRAY_TASK_ID $K $corr_var
 #
-python verify_samplers.py $SLURM_ARRAY_TASK_ID $K
+python python/verify_samplers.py $SLURM_ARRAY_TASK_ID $K
 
 #conda install -y numpy tqdm matplotlib IPython pandas conda-forge::rpy2
